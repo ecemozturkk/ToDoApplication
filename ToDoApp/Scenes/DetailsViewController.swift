@@ -11,6 +11,8 @@ class DetailsViewController: UIViewController {
 
     @IBOutlet weak var tfNewToDo: UITextField!
     
+    var viewModel = DetailsViewModel()
+    
     var toDo: ToDos?
     
     override func viewDidLoad() {
@@ -23,7 +25,8 @@ class DetailsViewController: UIViewController {
     
     @IBAction func updateButtonTapped(_ sender: Any) {
         if let td = tfNewToDo.text, let t = toDo {
-            update(todo_id: t.id!, todo_name: td)
+            viewModel.guncelle(id: t.id!, name: td)
+            //update(todo_id: t.id!, todo_name: td)
         }
         
     }

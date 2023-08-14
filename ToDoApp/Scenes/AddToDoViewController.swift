@@ -9,23 +9,21 @@ import UIKit
 
 class AddToDoViewController: UIViewController {
     
+    var viewModel = AddToDoViewModel()
     
     @IBOutlet weak var tfNewToDo: UITextField!
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
     }
     
     @IBAction func addButtonTapped(_ sender: Any) {
         if let newToDo = tfNewToDo.text {
-            addToDo(toDo: newToDo)
+            viewModel.addTodo(name: newToDo)
+            
         }
     }
-    func addToDo(toDo: String) {
-        print("deneme \(toDo)")
-    }
+  
         
 }

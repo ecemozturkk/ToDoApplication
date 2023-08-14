@@ -9,14 +9,12 @@ import UIKit
 
 class MainViewController: UIViewController {
     
-    
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var todoTableView: UITableView!
     
     var todosList = [ToDos]()
+    var viewModel = MainViewModel()
 
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -25,18 +23,14 @@ class MainViewController: UIViewController {
         todoTableView.dataSource = self
         todoTableView.delegate = self
         
-        let t1 = ToDos(id: 1, name: "Cleaning")
-        let t2 = ToDos(id: 1, name: "Working")
-        let t3 = ToDos(id: 1, name: "Studying")
-        let t4 = ToDos(id: 1, name: "Cleaning")
-        let t5 = ToDos(id: 1, name: "Cleaning")
-        let t6 = ToDos(id: 1, name: "Cleaning")
-        todosList.append(t1)
-        todosList.append(t2)
-        todosList.append(t3)
-        todosList.append(t4)
-        todosList.append(t5)
-        todosList.append(t6)
+        _ = viewModel.todosList.subscribe(onNext: { liste in
+            self.todosList = liste
+            self.todoTableView.reloadData()
+        })
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        viewModel.reloadTodos()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -52,7 +46,7 @@ class MainViewController: UIViewController {
 
 extension MainViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        print("Search To Do: \(searchText)")
+        viewModel.searchTodo(aramaKelimesi: searchText)
     }
 }
 
