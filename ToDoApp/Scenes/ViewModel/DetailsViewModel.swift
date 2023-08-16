@@ -11,7 +11,7 @@ class DetailsViewModel {
     var trepo = ToDosDaoRepository()
     
     func guncelle(id: Int, name:String){
-        trepo.guncelle(id: id, name: name)
+        trepo.update(id: id, name: name)
     }
 
 }

@@ -10,38 +10,84 @@ import RxSwift
 
 class ToDosDaoRepository {
     var todosList = BehaviorSubject<[ToDos]>(value: [ToDos]())
+    let db: FMDatabase?
+    
+    init() {
+        let filePath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+        let databaseURL = URL(fileURLWithPath: filePath).appendingPathComponent("todosDB.sqlite")
+        db = FMDatabase(path: databaseURL.path)
+    }
     
     func addTodo (name: String) {
-        print("To do added: \(name)")
+        db?.open()
+        do {
+            try db!.executeUpdate("INSERT INTO todosDB (name) VALUES (?)", values: [name])
+        } catch {
+            print(error.localizedDescription)
+        }
+        db?.close()
     }
-    func guncelle(id: Int, name:String){
-        print("To do updated: \(name)")
+    func update(id: Int, name:String){
+        db?.open()
+        do {
+            try db!.executeUpdate("UPDATE todosDB SET name = ? WHERE id = ?", values: [name, id])
+        } catch {
+            print(error.localizedDescription)
+        }
+        db?.close()
     }
     
     func deleteTodo(id: Int) {
-        print("To do deleted: \(id)")
-    }
-    func searchTodo(aramaKelimesi: String) {
-        print("To do searching: \(aramaKelimesi)")
-    }
-    func reloadTodos () {
         
+        db?.open()
+        do {
+            try db!.executeUpdate("DELETE FROM todosDB WHERE id = ?", values: [id])
+        } catch {
+            print(error.localizedDescription)
+        }
+        db?.close()
+    }
+    
+    func searchTodo(aramaKelimesi: String) {
+        db?.open()
         var liste = [ToDos]()
         
-        let t1 = ToDos(id: 1, name: "Cleaning")
-        let t2 = ToDos(id: 1, name: "Working")
-        let t3 = ToDos(id: 1, name: "Studying")
-        let t4 = ToDos(id: 1, name: "Cleaning")
-        let t5 = ToDos(id: 1, name: "Cleaning")
-        let t6 = ToDos(id: 1, name: "Cleaning")
-        liste.append(t1)
-        liste.append(t2)
-        liste.append(t3)
-        liste.append(t4)
-        liste.append(t5)
-        liste.append(t6)
+        do {
+            let result = try db!.executeQuery("SELECT * FROM todosDB WHERE name like '%\(aramaKelimesi)%'", values: nil)
+            
+            while result.next() {
+                let id = Int(result.string(forColumn: "id"))!
+                let name = result.string(forColumn: "name")!
+                
+                let todo = ToDos(id: id, name: name)
+                liste.append(todo)
+            }
+            todosList.onNext(liste)
+        } catch {
+            print(error.localizedDescription)
+        }
+        db?.close()
+    }
+    
+    func reloadTodos () {
+        db?.open()
+        var liste = [ToDos]()
         
-        todosList.onNext(liste)
+        do {
+            let result = try db!.executeQuery("SELECT * FROM todosDB", values: nil)
+            
+            while result.next() {
+                let id = Int(result.string(forColumn: "id"))!
+                let name = result.string(forColumn: "name")!
+                
+                let todo = ToDos(id: id, name: name)
+                liste.append(todo)
+            }
+            todosList.onNext(liste)
+        } catch {
+            print(error.localizedDescription)
+        }
+        db?.close()
     }
     
     

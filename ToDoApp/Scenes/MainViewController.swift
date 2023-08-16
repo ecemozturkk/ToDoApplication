@@ -75,7 +75,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
             alert.addAction(cancelAction)
             let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { action in
-                print("Deleted to-do: \(todo.name!)")
+                self.viewModel.deleteTodo(id: todo.id!)
             }
             alert.addAction(deleteAction)
             self.present(alert, animated: true)
